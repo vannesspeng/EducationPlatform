@@ -21,8 +21,8 @@ class UserAsk(models.Model):
 class CourseComments(models.Model):
 
     # 会涉及两个外键: 1. 用户， 2. 课程。import进来
-    course = models.ForeignKey(Course, verbose_name=u"课程")
-    user = models.ForeignKey(UserProfile, verbose_name=u"用户")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name=u"课程")
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name=u"用户")
     comments = models.CharField(max_length=250, verbose_name=u"评论")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"评论时间")
 
@@ -40,7 +40,7 @@ class UserFavorite(models.Model):
         (3, u"讲师")
     )
 
-    user = models.ForeignKey(UserProfile, verbose_name=u"用户")
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name=u"用户")
     # course = models.ForeignKey(Course, verbose_name=u"课程")
     # teacher = models.ForeignKey()
     # org = models.ForeignKey()
@@ -82,8 +82,8 @@ class UserMessage(models.Model):
 # 用户课程表
 class UserCourse(models.Model):
     # 会涉及两个外键: 1. 用户， 2. 课程。import进来
-    course = models.ForeignKey(Course, verbose_name=u"课程")
-    user = models.ForeignKey(UserProfile, verbose_name=u"用户")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name=u"课程")
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name=u"用户")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")
 
     class Meta:
