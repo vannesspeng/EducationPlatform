@@ -1,3 +1,4 @@
+# encoding : utf-8
 from datetime import datetime
 
 from django.contrib.auth.models import AbstractUser
@@ -13,7 +14,7 @@ class UserProfile(AbstractUser):
     nike_name = models.CharField(max_length=50, verbose_name="昵称", default="")
     birthday = models.DateField(verbose_name="生日", null=True, blank=True)
     gender = models.CharField(
-        max_length=5,
+        max_length=7,
         verbose_name=u"性别",
         choices=GENDER_CHOICES,
         default="female"
