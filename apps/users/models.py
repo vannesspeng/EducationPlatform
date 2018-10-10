@@ -28,7 +28,7 @@ class UserProfile(AbstractUser):
     )
 
     class Meta:
-        verbose_name = "用户信息",
+        verbose_name = '用户信息'
         verbose_name_plural = verbose_name
 
     # 重载Unicode方法，打印实例会打印实例的username属性，username继承自
