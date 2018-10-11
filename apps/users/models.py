@@ -33,7 +33,7 @@ class UserProfile(AbstractUser):
 
     # 重载Unicode方法，打印实例会打印实例的username属性，username继承自
     def __str__(self):
-        print(self.username)
+        return self.username
 
 
 class EmailVerifyRecord(models.Model):
