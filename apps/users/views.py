@@ -3,25 +3,32 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.shortcuts import render
 #当我们配置这个url被这个view处理时，自动传入request对象
+from django.views.generic.base import View
+
+from users.forms import LoginForm
 from users.models import UserProfile
 
-
-def user_login(request):
-    # 登录提交表单：POST
-    if request.method == 'POST':
-        # 从request的POST对象中获取用户名和密码
-        user_name = request.POST.get('username', '')
-        password = request.POST.get('password','')
-
-        # 调用Django自带的验证方法
-        user = authenticate(request, username=user_name, password=password)
-        if user is not None:
-            login(request, user)
-            return render(request, 'index.html')
-        return render(request, 'login.html', {'msg':'用户名或者密码错误！'})
-
-    if request.method == 'GET':
+class LoginView(View):
+    def get(self, request):
         return render(request, 'login.html', {})
+
+
+    def post(self, request):
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
+            # 从request的POST对象中获取用户名和密码
+            user_name = request.POST.get('username', '')
+            password = request.POST.get('password', '')
+            # 调用Django自带的验证方法
+            user = authenticate(request, username=user_name, password=password)
+            if user is not None:
+                login(request, user)
+                return render(request, 'index.html')
+            else:
+                return render(request, 'login.html', {'msg': '用户名或者密码错误！'})
+        else:
+            return render(request, 'login.html', {'login_form': login_form})
+
 
 
 class CustomBackend(ModelBackend):
