@@ -5,9 +5,9 @@ from django.db.models import Q
 from django.shortcuts import render
 #当我们配置这个url被这个view处理时，自动传入request对象
 from django.views.generic.base import View
-
+import threading
 from operation.models import UserMessage
-from users.forms import LoginForm, RegisterForm, ActiveForm
+from users.forms import LoginForm, RegisterForm, ActiveForm, ForgetForm, ModifyPwdForm
 from users.models import UserProfile, EmailVerifyRecord
 from utils.email_send import send_register_eamil
 
@@ -26,8 +26,11 @@ class LoginView(View):
             # 调用Django自带的验证方法
             user = authenticate(request, username=user_name, password=password)
             if user is not None:
-                login(request, user)
-                return render(request, 'index.html')
+                if user.is_active:
+                    login(request, user)
+                    return render(request, 'index.html')
+                else:
+                    return render(request, 'login.html', {'msg': '用户未激活'})
             else:
                 return render(request, 'login.html', {'msg': '用户名或者密码错误！'})
         else:
@@ -43,30 +46,41 @@ class RegisterView(View):
         register_form = RegisterForm(request.POST)
         if register_form.is_valid():
             user_name = request.POST.get('email', '')
-            password = request.POST.get('password', '')
+            users = UserProfile.objects.filter(username=user_name)
+            if not users:
+                password = request.POST.get('password', '')
+                user_profile = UserProfile()
+                user_profile.username = user_name
+                user_profile.email = user_name
+                user_profile.password = make_password(password)
+                # 默认激活状态为false
+                user_profile.is_active = False
+                user_profile.save()
+                # 写入欢迎注册消息
+                user_message = UserMessage()
+                user_message.user = user_profile.id
+                user_message.message = "欢迎注册mtianyan慕课小站!! --系统自动消息"
+                user_message.save()
 
-            user_profile = UserProfile()
-            user_profile.username = user_name
-            user_profile.email = user_name
-            user_profile.password = make_password(password)
-
-            # 默认激活状态为false
-            user_profile.is_active = False
-
-            user_profile.save()
-
-            # 写入欢迎注册消息
-            user_message = UserMessage()
-            user_message.user = user_profile.id
-            user_message.message = "欢迎注册mtianyan慕课小站!! --系统自动消息"
-            user_message.save()
-
-            # 发送注册激活邮件
-            send_register_eamil(user_name, "register")
-            # 跳转到登录页面
-            return render(request, "login.html")
+                # 新建一个线程发送注册激活邮件
+                send_email_thread = SendEmailThread(email=user_name, type='register')
+                send_email_thread.start()
+                # 跳转到登录页面
+                return render(request, "login.html")
+            else:
+                return render(request, 'register.html', {'msg': '用户名已经注册', 'register_form': register_form})
         else:
             return render(request, 'register.html', {'register_form': register_form})
+
+class SendEmailThread(threading.Thread):
+    def __init__(self, email, type):
+        threading.Thread.__init__(self)
+        self.email = email
+        self.type = type
+
+
+    def run(self):
+        send_register_eamil(self.email, "register")
 
 # 激活用户的view
 class ActiveUserView(View):
@@ -85,11 +99,80 @@ class ActiveUserView(View):
                 user.is_active = True
                 user.save()
                 # 激活成功跳转到登录页面
-                return render(request, "login.html", )
-        # 自己瞎输的验证码
+                return render(request, "login.html", {"msg": "激活成功，请重新登陆"})
+        # 自己瞎输的激活码
         else:
-            return render(request, "register.html", {"msg": "您的激活链接无效","active_form": active_form})
+            return render(
+                request, "register.html", {
+                    "msg": "您的激活链接无效", 'active_form': active_form})
 
+
+class ForgetPwdView(View):
+    def get(self, request):
+        active_form = ActiveForm(request.POST)
+        return render(request, 'forgetpwd.html', {'active_form': active_form})
+
+
+    def post(self, request):
+        forget_form = ForgetForm(request.POST)
+        if forget_form.is_valid():
+            email = request.POST.get('email', '')
+            results = UserProfile.objects.filter(email=email)
+            if not results:
+                return render(request, 'forgetpwd.html', {'msg': '邮箱未注册!', 'forget_form': forget_form})
+            else:
+                # 发送邮件
+                send_email_thread = SendEmailThread(email=email, type='forget')
+                send_email_thread.start()
+                #send_register_eamil(email, 'forget')
+                return render(request, "login.html", {"msg": "重置密码邮件已发送,请注意查收!"})
+        else:
+            return render(request, 'forgetpwd.html', {'forget_form': forget_form})
+
+class PswResetView(View):
+    def get(self, request, active_code):
+        all_record = EmailVerifyRecord.objects.filter(code=active_code)
+        # 如果不为空也就是有用户
+        active_form = ActiveForm(request.GET)
+        if all_record:
+            # 获取对应的邮箱
+            for record in all_record:
+                email = record.email
+                return render(request, 'password_reset.html', {'active_code': active_code})
+        else:
+            return render(
+                request, "forgetpwd.html", {
+                    "msg": "您的重置密码链接无效,请重新请求", "active_form": active_form})
+
+
+
+class ModifyPwdView(View):
+    def post(self, request):
+        modify_psw_form = ModifyPwdForm(request.POST)
+        if modify_psw_form.is_valid():
+            new_psw = request.POST.get("new_psw", "")
+            new_psw_confirm = request.POST.get("new_psw_confirm", "")
+            active_code = request.POST.get("active_code", "")
+            # 如果两次密码不相等，返回错误信息
+            if new_psw != new_psw_confirm:
+                return render(
+                    request, "password_reset.html", {
+                        'active_code':active_code, "msg": "两次输入的密码不一致"})
+            # 新密码两次输入不一致，返回错误信息
+            # 如果密码一致
+            # 找到激活码对应的邮箱
+            all_record = EmailVerifyRecord.objects.filter(code=active_code)
+            for record in all_record:
+                email = record.email
+            user = UserProfile.objects.get(email=email)
+            # 加密成密文
+            user.password = make_password(new_psw)
+            # save保存到数据库
+            user.save()
+            return render(request, "login.html", {"msg": "密码修改成功，请登录!"})
+        # 验证失败说明密码位数不够。
+        else:
+            return render(request, 'password_reset.html', {'modify_psw_form': modify_psw_form})
 
 class CustomBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):

@@ -140,9 +140,12 @@ STATIC_ROOT = '/static/'
 
 # 发送邮件的setting设置
 
-EMAIL_HOST = "smtp.qq.com"
+# 发送邮箱验证的配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "401041628@qq.com"
-EMAIL_HOST_PASSWORD = "fh0211005680"
-EMAIL_USE_TLS= True
-EMAIL_FROM = EMAIL_HOST_USER
+EMAIL_HOST_USER = '2810706745@qq.com'
+EMAIL_HOST_PASSWORD = ''  #这里填写授权码
+EMAIL_USE_TLS= False
+EMAIL_FROM = '2810706745@qq.com'
+

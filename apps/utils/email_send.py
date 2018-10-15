@@ -4,10 +4,14 @@
 # datetime:2018/10/11 15:54
 from random import Random
 
+from django.template import loader
+
 from settings import EMAIL_FROM
 from  users.models import EmailVerifyRecord
 # 导入Django自带的邮件模块
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
+
+
 # 导入setting中发送邮件的配置
 
 # 生成随机字符串
@@ -45,6 +49,20 @@ def send_register_eamil(email, send_type="register"):
 
         # 使用Django内置函数完成邮件发送。四个参数：主题，邮件内容，从哪里发，接受者list
         send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
+        # 如果发送成功
+        if send_status:
+            pass
+    elif send_type == "forget":
+        email_title = "mtianyan慕课小站 找回密码链接"
+        email_body = loader.render_to_string(
+            "email_forget.html",  # 需要渲染的html模板
+            {
+                "active_code": code  # 参数
+            }
+        )
+        msg = EmailMessage(email_title, email_body, EMAIL_FROM, [email])
+        msg.content_subtype = "html"
+        send_status = msg.send()
         # 如果发送成功
         if send_status:
             pass
