@@ -34,6 +34,7 @@ urlpatterns = [
     path('forget/', ForgetPwdView.as_view(), name='forget_pwd'),
     re_path('reset/(?P<active_code>.*)/', PswResetView.as_view(), name="reset_pwd"),
     path('modify_pwd/', ModifyPwdView.as_view(), name="modify_pwd"),
-    path('org_list/', OrgView.as_view(), name="org_list"),
     re_path(r'^media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
+    # 课程机构app的url配置，讲师的也在里面
+    path('org/', include('organization.urls', namespace='org'))
 ]

@@ -26,27 +26,28 @@
                         <li>
                             <h2>机构类别</h2>
                             <div class="cont">
-                                <a href=""><span
-                                        class="active2">全部</span></a>
+                                <a href="?city={{ city_id }}&keywords={{ search_keywords }}"><span
+                                        class="{% ifequal category "" %}active2{% endifequal %}">全部</span></a>
 
-                                <a href=""><span
-                                        class="">培训机构</span></a>
+                                <a href="?ct=pxjg&city={{ city_id }}&keywords={{ search_keywords }}"><span
+                                        class="{% ifequal category "pxjg" %}active2{% endifequal %}">培训机构</span></a>
 
-                                <a href=""><span
-                                        class="">高校</span></a>
+                                <a href="?ct=gx&city={{ city_id }}&keywords={{ search_keywords }}"><span
+                                        class="{% ifequal category "gx" %}active2{% endifequal %}">高校</span></a>
 
-                                <a href=""><span
-                                        class="">个人</span></a>
+                                <a href="?ct=gr&city={{ city_id }}&keywords={{ search_keywords }}"><span
+                                        class="{% ifequal category "gr" %}active2{% endifequal %}">个人</span></a>
 
                             </div>
                         </li>
                         <li>
                             <h2>所在地区</h2>
                             <div class="cont">
-                                <a href=""><span
-                                        class="active2">全部</span></a>
+                                <a href="?ct={{ category }}&keywords={{ search_keywords }}"><span
+                                        class="{% ifequal city_id '' %}active2{% endifequal %}">全部</span></a>
                                 {% for city in all_citys %}
-                                    <a href="?ct={{ category }}&city={{ city.id }}&keywords={{ search_keywords }}"><span class="{% ifequal city.id|stringformat:"i" city_id %}active2{% endifequal %}">{{ city.name }}</span></a>
+                                    <a href="?ct={{ category }}&city={{ city.id }}&keywords={{ search_keywords }}"><span
+                                            class="{% ifequal city.id|stringformat:"i" city_id %}active2{% endifequal %}">{{ city.name }}</span></a>
                                 {% endfor %}
                             </div>
                         </li>
@@ -57,14 +58,14 @@
                     <div class="layout">
                         <div class="head">
                             <ul class="tab_header">
-                                <li class=""><a
-                                        href="">全部</a>
+                                <li class="{% ifequal sort '' %}active {% endifequal %}"><a
+                                        href="?ct={{ category }}&city={{ city_id }}&keywords={{ search_keywords }}">全部</a>
                                 </li>
-                                <li class=""><a
-                                        href="">学习人数
+                                <li class="{% ifequal sort 'student' %}active {% endifequal %}"><a
+                                        href="?ct={{ category }}&city={{ city_id }}&keywords={{ search_keywords }}&sort=students">学习人数
                                     &#8595;</a></li>
-                                <li class=""><a
-                                        href="">课程数
+                                <li class="{% ifequal sort 'courses' %}active {% endifequal %}"><a
+                                        href="?ct={{ category }}&city={{ city_id }}&keywords={{ search_keywords }}&sort=courses">课程数
                                     &#8595;</a></li>
                             </ul>
                         </div>
@@ -95,12 +96,11 @@
                                         </p>
                                             <p class="c7">学习人数：<span>{{ course_org.students }}</span></p></li>
                                         <li class="c8" style="padding-left:18px;">{{ course_org.address }}</li>
-                                        <li class="pic10" style="padding-left:18px;">经典课程：
-
-                                                <a href=""></a>
-
-
-                                        </li>
+                                       {% comment %} <li class="pic10" style="padding-left:18px;">经典课程：
+                                            {% for course in course_org.course_set.get_queryset %}
+                                                <a href="{% url 'course:course_detail' course.id %}">{{ course.name }}</a>
+                                            {% endfor %}
+                                        </li>{% endcomment %}
                                     </ul>
                                 </dd>
                                 <div class="buy start_groupbuy jsShowPerfect2" data-id="22"><a
@@ -161,7 +161,7 @@
                     <dl class="des">
                         <dt class="num fl">{{ forloop.counter }}</dt>
                         <dd>
-                            <a href="{% url 'org:org_home' curent_org.id %}"><h1>{{ curent_org.name }}</h1></a>
+                            <a href=""><h1>{{ curent_org.name }}</h1></a>
                             <p>{{ curent_org.address }}</p>
                         </dd>
                     </dl>
@@ -171,4 +171,30 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    $(function(){
+        $('#jsStayBtn').on('click', function(){
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"{% url "org:add_ask" %}",
+                data:$('#jsStayForm').serialize(),
+                async: true,
+                success: function(data) {
+                    if(data.status == 'success'){
+                        $('#jsStayForm')[0].reset();
+                         $('#jsCompanyTips').html("");
+                        alert("提交成功")
+                    }else if(data.status == 'fail'){
+                        $('#jsCompanyTips').html(data.msg);
+                    }
+                },
+            });
+        });
+    })
+
+</script>
 {% endblock %}
