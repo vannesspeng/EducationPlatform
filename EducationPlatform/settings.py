@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'captcha',
+    'pure_pagination',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 添加图片处理器，将ImageField显示图片必备的模块
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -148,4 +151,8 @@ EMAIL_HOST_USER = '2810706745@qq.com'
 EMAIL_HOST_PASSWORD = ''  #这里填写授权码
 EMAIL_USE_TLS= False
 EMAIL_FROM = '2810706745@qq.com'
+
+# 文件上传的路径
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

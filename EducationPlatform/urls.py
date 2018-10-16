@@ -16,8 +16,11 @@ Including another URLconf
 
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
+from django.views.static import serve
 
 import xadmin
+from organization.views import OrgView
+from settings import MEDIA_ROOT
 from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, PswResetView, ModifyPwdView
 
 urlpatterns = [
@@ -31,4 +34,6 @@ urlpatterns = [
     path('forget/', ForgetPwdView.as_view(), name='forget_pwd'),
     re_path('reset/(?P<active_code>.*)/', PswResetView.as_view(), name="reset_pwd"),
     path('modify_pwd/', ModifyPwdView.as_view(), name="modify_pwd"),
+    path('org_list/', OrgView.as_view(), name="org_list"),
+    re_path(r'^media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
 ]
