@@ -96,11 +96,13 @@
                                         </p>
                                             <p class="c7">学习人数：<span>{{ course_org.students }}</span></p></li>
                                         <li class="c8" style="padding-left:18px;">{{ course_org.address }}</li>
-                                       {% comment %} <li class="pic10" style="padding-left:18px;">经典课程：
+                                        <li class="pic10" style="padding-left:18px;">经典课程：
                                             {% for course in course_org.course_set.get_queryset %}
-                                                <a href="{% url 'course:course_detail' course.id %}">{{ course.name }}</a>
+                                                {% if forloop.counter < 4 %}
+                                                <a href="">{{ course.name }}</a>
+                                                {% endif %}
                                             {% endfor %}
-                                        </li>{% endcomment %}
+                                        </li>
                                     </ul>
                                 </dd>
                                 <div class="buy start_groupbuy jsShowPerfect2" data-id="22"><a
