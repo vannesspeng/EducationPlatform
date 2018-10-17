@@ -2,8 +2,10 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 #当我们配置这个url被这个view处理时，自动传入request对象
+from django.urls import reverse
 from django.views.generic.base import View
 import threading
 from operation.models import UserMessage
@@ -14,7 +16,10 @@ from utils.email_send import send_register_eamil
 
 class LoginView(View):
     def get(self, request):
-        return render(request, 'login.html', {})
+        redirect_url = request.GET.get('next', '')
+        return render(request, 'login.html', {
+            'redirect_url': redirect_url
+        })
 
 
     def post(self, request):
@@ -28,7 +33,10 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return render(request, 'index.html')
+                    redirect_url = request.POST.get('next', '')
+                    if redirect_url:
+                        return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(reverse("index"))
                 else:
                     return render(request, 'login.html', {'msg': '用户未激活'})
             else:
@@ -59,7 +67,7 @@ class RegisterView(View):
                 # 写入欢迎注册消息
                 user_message = UserMessage()
                 user_message.user = user_profile.id
-                user_message.message = "欢迎注册mtianyan慕课小站!! --系统自动消息"
+                user_message.message = "欢迎注册Isudynet小站!! --系统自动消息"
                 user_message.save()
 
                 # 新建一个线程发送注册激活邮件
