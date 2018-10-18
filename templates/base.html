@@ -93,7 +93,7 @@
                             <li  {% ifequal  '/course' request.path|slice:":7" %}
                                 class="active"
                             {% endifequal %}>
-                                <a href="">
+                                <a href="{% url 'course:list' %}">
                                     公开课<img class="hot" src="{% static 'images/nav_hot.png' %}">
                                 </a>
                             </li>

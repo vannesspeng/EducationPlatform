@@ -6,6 +6,7 @@ from django.views.generic.base import View
 from pure_pagination import Paginator
 
 from courses.models import Course
+from operation.models import UserFavorite
 
 
 class CourseListView(View):
@@ -39,3 +40,35 @@ class CourseListView(View):
             'hot_courses': hot_courses,
             'search_keywords': search_keywords
         })
+
+
+class CourseDetailView(View):
+    def get(self, request, course_id):
+        # 根据课程id获取课程记录
+        course = Course.objects.get(id=int(course_id))
+
+        #相关课程推荐，相关的课程就是TAG相同的课程
+        tag = course.tag
+        if tag:
+            relate_courses = Course.objects.filter(tag=tag).exclude(id=course_id)
+        else:
+            relate_courses = []
+
+        #两个参数判断课程详情页面的收藏按钮的显示状态
+        has_fav_course = False
+        has_fav_org = False
+        if request.user.is_authenticated:
+            if UserFavorite.objects.filter(user=request.user, fav_type=1, fav_id=course.id):
+                #说明课程已收藏
+                has_fav_course = True
+
+            if UserFavorite.objects.filter(user=request.user, fav_type=2, fav_id=course.course_org.id):
+                has_fav_org = True
+
+        if course:
+            return render(request, 'course-detail.html', {
+                'course': course,
+                "has_fav_course": has_fav_course,
+                "has_fav_org": has_fav_org,
+                "relate_courses": relate_courses
+            })

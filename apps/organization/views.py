@@ -8,9 +8,10 @@ from django.views.generic.base import View
 # 处理课程机构列表的view
 from pure_pagination import Paginator
 
+from courses.models import Course
 from operation.models import UserAsk, UserFavorite
 from organization.forms import UserAskForm
-from organization.models import CityDict, CourseOrg
+from organization.models import CityDict, CourseOrg, Teacher
 
 
 class OrgView(View):
@@ -172,6 +173,15 @@ class AddFavView(View):
             exist_records.delete()
             # 收藏的减少会导致，课程，教师，机构的喜欢数量变化，所以此处要同步修改
             # 1：表示删除的收藏类型为课程
+            if int(type) ==1:
+                course = Course.objects.get(id=int(id))
+                if course.fav_nums > 0:
+                    course.fav_nums -= 1
+                else:
+                    course.fav_nums = 0
+                course.save()
+
+            # 2：表示删除的收藏类型为机构
             if int(type) == 2:
                 course_org = CourseOrg.objects.get(id=int(id))
                 if course_org.fav_nums > 0:
@@ -180,9 +190,14 @@ class AddFavView(View):
                     course_org.fav_nums = 0
                 course_org.save()
 
-
-            # 2：表示删除的收藏类型为课程机构
-            # 1：表示删除的收藏类型为教师
+            # 3：表示删除的收藏类型为教师
+            if int(type) == 3:
+                teacher = Teacher.objects.get(id=int(id))
+                if teacher.fav_nums > 0:
+                    teacher.fav_nums -= 1
+                else:
+                    teacher.fav_nums = 0
+                teacher.save()
 
             return HttpResponse(
                 '{"status": "success", "msg": "收藏"}', content_type="application/json"
@@ -196,6 +211,18 @@ class AddFavView(View):
                 user_fav.user = request.user
                 user_fav.save()
                 # 收藏成功
+                if int(type) == 1:
+                    course = Course.objects.get(id=int(id))
+                    course.fav_nums += 1
+                    course.save()
+                elif int(type) == 2:
+                    org = CourseOrg.objects.get(id=int(id))
+                    org.fav_nums += 1
+                    org.save()
+                elif int(type) == 3:
+                    teacher = Teacher.objects.get(id=int(id))
+                    teacher.fav_nums += 1
+                    teacher.save()
                 return HttpResponse(
                     '{"status": "success", "msg": "已收藏"}', content_type="application/json"
                 )

@@ -43,6 +43,17 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+    # 替代标签:course.lesson_set.count
+    # def get_zj_nums(self):
+    #     # 获取课程章节数的方法
+    #     return self.lesson_set.all().count()
+
+    # 获取学习这门课程的用户
+    # 替代标签:course.usercourse_set.get_queryset|slice:":1"
+    # def get_learn_users(self):
+    #     # 谁的里面添加了它做外键，他都可以取出来
+    #     return self.usercourse_set.all()[:5]
+
 
 # 章节
 class Lesson(models.Model):
