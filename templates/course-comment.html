@@ -13,7 +13,7 @@
 			<ul>
 				<li><a href="{% url 'index' %}">首页</a>></li>
                 <li><a href="{% url 'course:list' %}">公开课程</a>></li>
-				<li><a href="{% url 'course:course_detail' course.id %}">课程详情</a>></li>
+				<li><a href="">课程详情</a>></li>
                 <li>课程评论</li>
 			</ul>
 		</div>
@@ -64,8 +64,8 @@
                 <div class="content">
                     <div class="mod-tab-menu">
                         <ul class="course-menu clearfix">
-                        <li><a  href="{% url 'course:course_info' course.id %}"><span>章节</span></a></li>
-                        <li><a  class="ui-tabs-active active" id="learnOn" id="commentOn" class="" href="{% url 'course:course_comments' course.id %}"><span>评论</span></a></li>
+                        <li><a  href="{% url 'course:course_info' course.id%}"><span>章节</span></a></li>
+                        <li><a  class="ui-tabs-active active" id="learnOn" id="commentOn" class="" href=""><span>评论</span></a></li>
                         </ul>
                     </div>
 
@@ -118,11 +118,11 @@
                     <div class="box mb40">
                         <h4>讲师提示</h4>
                         <div class="teacher-info">
-                            <a href="{% url 'org:teacher_detail' course.teacher.id  %}" target="_blank">
+                            <a href="" target="_blank">
                                 <img src='{{ MEDIA_URL }}{{ course.teacher.image }}' width='80' height='80' />
                             </a>
         <span class="tit">
-          <a href="{% url 'org:teacher_detail' course.teacher.id  %}" target="_blank">{{ course.teacher.name }}</a>
+          <a href="" target="_blank">{{ course.teacher.name }}</a>
         </span>
                             <span class="job">{{ course.teacher.work_position }}</span>
                         </div>
@@ -150,15 +150,12 @@
 
                                     {% for relate_course in relate_courses  %}
                                     <li class="curr">
-                                        <a href="{% url 'course:course_detail' relate_course.id %}" target="_blank">
+                                        <a href="" target="_blank">
                                             <img src="{{ MEDIA_URL }}{{ relate_course.image }}" alt="{{ relate_course.name }}">
                                             <span class="name autowrap">{{ relate_course.name }}</span>
                                         </a>
                                     </li>
                                     {% endfor %}
-
-
-
                                 </ul>
                             </div>
                             <div class="cp-tab-pannel js-comp-tab-pannel" data-pannel="plan">

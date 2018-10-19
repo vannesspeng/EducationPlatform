@@ -1,12 +1,13 @@
 from django.core.paginator import PageNotAnInteger
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.base import View
 # Create your views here.
 from pure_pagination import Paginator
 
 from courses.models import Course
-from operation.models import UserFavorite
+from operation.models import UserFavorite, CourseComments
 
 
 class CourseListView(View):
@@ -79,8 +80,33 @@ class CourseInfoView(View):
         return render(request, 'course-video.html', {'course': course})
 
 class CommentsView(View):
-    def get(self, request):
-        pass
+    def get(self, request, course_id):
+        course = Course.objects.get(id=course_id)
+        all_comments = CourseComments.objects.filter(course_id=course_id)
+        return render(request, 'course-comment.html', {'course': course, "all_comments": all_comments})
+
+class AddCommentsView(View):
+    def post(self, request):
+        #1、判断用户是否登录
+        if not request.user.is_authenticated:
+            return HttpResponse('{"status":"fail","msg":"用户未登录" }', content_type="application/json")
+
+        # 2、获取course_id和评论内容
+        course_id = request.POST.get("course_id", "")
+        comments = request.POST.get("comments", "")
+
+        if int(course_id) > 0 and comments:
+            course = Course.objects.get(id=course_id)
+            course_comment = CourseComments()
+            course_comment.course = course
+            course_comment.comments = comments
+            course_comment.user = request.user
+            course_comment.save()
+            return HttpResponse('{"status":"success","msg":"评论成功！"}', content_type="application/json")
+        else:
+            return HttpResponse('{"status":"fail", "msg":"评论失败！请重新尝试!"}', content_type="application/json")
+
+
 
 class VideoPlayView(View):
     def get(self,request):
