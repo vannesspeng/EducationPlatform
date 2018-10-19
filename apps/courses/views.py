@@ -72,3 +72,16 @@ class CourseDetailView(View):
                 "has_fav_org": has_fav_org,
                 "relate_courses": relate_courses
             })
+
+class CourseInfoView(View):
+    def get(self, request, course_id):
+        course = Course.objects.get(id=course_id)
+        return render(request, 'course-video.html', {'course': course})
+
+class CommentsView(View):
+    def get(self, request):
+        pass
+
+class VideoPlayView(View):
+    def get(self,request):
+        pass
