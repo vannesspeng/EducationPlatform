@@ -6,7 +6,7 @@ from django.views.generic.base import View
 # Create your views here.
 from pure_pagination import Paginator
 
-from courses.models import Course
+from courses.models import Course, Video, CourseResource
 from operation.models import UserFavorite, CourseComments, UserCourse
 
 
@@ -123,5 +123,26 @@ class AddCommentsView(View):
 
 
 class VideoPlayView(View):
-    def get(self,request):
-        pass
+    def get(self,request, video_id):
+        video = Video.objects.get(id=video_id)
+        course = video.lesson.course
+        # 查询一下该用户是否学习了该课程，如果没有则需要添加
+        user_course = UserCourse.objects.filter(user=request.user, course_id=course.id)
+        if not user_course:
+            user_course = UserCourse(user=request.user, course=course)
+            user_course.save()
+
+        #查询课程资源
+        all_resources = CourseResource.objects.filter(course=course)
+        user_courses = UserCourse.objects.filter(course=course)
+        user_ids = [user_course.user_id for user_course in user_courses]
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+        course_ids = [all_user_course.course_id for all_user_course in all_user_courses]
+        relate_courses = Course.objects.filter(id__in=course_ids).exclude(id=course.id)
+
+        return render(request, 'course-play.html', {
+            "video": video,
+            "course": course,
+            "all_resources": all_resources,
+            "relate_courses":relate_courses
+        })
