@@ -7,7 +7,7 @@ from django.views.generic.base import View
 from pure_pagination import Paginator
 
 from courses.models import Course
-from operation.models import UserFavorite, CourseComments
+from operation.models import UserFavorite, CourseComments, UserCourse
 
 
 class CourseListView(View):
@@ -77,13 +77,27 @@ class CourseDetailView(View):
 class CourseInfoView(View):
     def get(self, request, course_id):
         course = Course.objects.get(id=course_id)
-        return render(request, 'course-video.html', {'course': course})
+        user_courses = UserCourse.objects.filter(course=course)
+        user_ids = [user_course.user_id for user_course in user_courses]
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+        course_ids = [all_user_course.course_id for all_user_course in all_user_courses]
+        relate_courses = Course.objects.filter(id__in=course_ids).exclude(id=course_id)
+        return render(request, 'course-video.html', {'course': course, 'relate_courses': relate_courses})
 
 class CommentsView(View):
     def get(self, request, course_id):
         course = Course.objects.get(id=course_id)
         all_comments = CourseComments.objects.filter(course_id=course_id)
-        return render(request, 'course-comment.html', {'course': course, "all_comments": all_comments})
+        user_courses = UserCourse.objects.filter(course=course)
+        user_ids = [user_course.user_id for user_course in user_courses]
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+        course_ids = [all_user_course.course_id for all_user_course in all_user_courses]
+        relate_courses = Course.objects.filter(id__in=course_ids).exclude(id=course_id)
+        return render(request, 'course-comment.html', {
+            'course': course,
+            "all_comments": all_comments,
+            'relate_courses': relate_courses
+        })
 
 class AddCommentsView(View):
     def post(self, request):
