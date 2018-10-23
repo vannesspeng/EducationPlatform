@@ -45,8 +45,10 @@ class CourseListView(View):
 
 class CourseDetailView(View):
     def get(self, request, course_id):
-        # 根据课程id获取课程记录
+        # 根据课程id获取课程记录,添加课程点击数
         course = Course.objects.get(id=int(course_id))
+        course.click_nums += 1
+        course.save()
 
         #相关课程推荐，相关的课程就是TAG相同的课程
         tag = course.tag

@@ -100,7 +100,7 @@
                             <li {% ifequal  '/org/teacher' request.path|slice:":12" %}
                                 class="active"
                             {% endifequal %}>
-                                <a href="">授课教师</a>
+                                <a href="{% url 'org:teacher_list' %}">授课教师</a>
                             </li>
                             <li {% ifequal  '/org/list' request.path|slice:":9" %}
                                 class="active"

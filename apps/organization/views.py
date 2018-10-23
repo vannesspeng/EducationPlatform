@@ -231,3 +231,58 @@ class AddFavView(View):
                     '{"status": "fail", "msg": "收藏出错"}', content_type="application/json"
                 )
 
+class TeacherListView(View):
+    def get(self, request):
+        #名师盘排行榜的功能
+        all_teacher = Teacher.objects.all()
+        teacher_nums = all_teacher.count()
+
+        #接收hot参数，按人气进行排行
+        sort = request.GET.get('sort', '')
+        if sort and sort == "hot":
+            all_teacher = all_teacher.order_by("-click_nums")
+
+        #搜索关键字
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_teacher = all_teacher.filter(
+                Q(name__icontains=search_keywords) | Q(work_company__icontains=search_keywords)
+            )
+
+        # 对老师进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+        p = Paginator(all_teacher, 4, request=request)
+        teachers = p.page(page)
+        # 排行榜讲师
+        rank_teachers = Teacher.objects.all().order_by("-fav_nums")[:5]
+        return render(request, 'teachers-list.html', {
+            "all_teacher": teachers,
+            "teacher_nums": teacher_nums,
+            "rank_teachers": rank_teachers
+        })
+
+class TeacherDetailView(View):
+    def get(self,request, teacher_id):
+        #获取teacher对象
+        teacher = Teacher.objects.get(id=teacher_id)
+        #获取教师的全部课程
+        all_course = teacher.course_set.all()
+
+        #收藏的问题
+        has_fav_teacher = False
+        if UserFavorite.objects.filter(user=request.user, fav_type=3, fav_id=teacher.id):
+            has_fav_teacher = True
+
+        has_fav_org = False
+        if UserFavorite.objects.filter(user=request.user, fav_type=2, fav_id=teacher.org.id):
+            has_fav_org = True
+
+        return render(request, 'teacher-detail.html', {
+            'teacher': teacher,
+            'all_course': all_course,
+            'has_fav_teacher': has_fav_teacher,
+            'has_fav_org': has_fav_org,
+        })
