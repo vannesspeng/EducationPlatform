@@ -9,7 +9,7 @@ from django.template import loader
 from settings import EMAIL_FROM
 from  users.models import EmailVerifyRecord
 # 导入Django自带的邮件模块
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
 
 
 # 导入setting中发送邮件的配置
@@ -32,7 +32,10 @@ def send_register_eamil(email, send_type="register"):
     # 实例化一个EmailVerifyRecord对象
     email_record = EmailVerifyRecord()
     # 生成随机的code放入链接
-    code = random_str(16)
+    if send_type == "update_email":
+        code = random_str(4)
+    else:
+        code = random_str(16)
     email_record.code = code
     email_record.email = email
     email_record.send_type = send_type
@@ -44,16 +47,26 @@ def send_register_eamil(email, send_type="register"):
     email_body = ""
 
     if send_type == "register":
-        email_title = "IstudyNet教学管理平台 注册激活链接"
-        email_body = "请点击下面的链接激活你的账号: http://127.0.0.1:8000/active/{0}".format(code)
+        email_title = "Istudynet小站 注册激活链接"
+        # email_body = "欢迎注册Istudynet小站  请点击下面的链接激活你的账号: http://127.0.0.1:8000/active/{0}".format(code)
 
+        email_body = loader.render_to_string(
+            "email_register.html",  # 需要渲染的html模板
+            {
+                "active_code": code  # 参数
+            }
+        )
+
+        msg = EmailMessage(email_title, email_body, EMAIL_FROM, [email])
+        msg.content_subtype = "html"
+        send_status = msg.send()
         # 使用Django内置函数完成邮件发送。四个参数：主题，邮件内容，从哪里发，接受者list
-        send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
+        # send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
         # 如果发送成功
         if send_status:
             pass
     elif send_type == "forget":
-        email_title = "mtianyan慕课小站 找回密码链接"
+        email_title = "Istudynet小站 找回密码链接"
         email_body = loader.render_to_string(
             "email_forget.html",  # 需要渲染的html模板
             {
@@ -63,6 +76,14 @@ def send_register_eamil(email, send_type="register"):
         msg = EmailMessage(email_title, email_body, EMAIL_FROM, [email])
         msg.content_subtype = "html"
         send_status = msg.send()
-        # 如果发送成功
-        if send_status:
-            pass
+    elif send_type == "update_email":
+        email_title = "Istudynet小站 修改邮箱验证码"
+        email_body = loader.render_to_string(
+            "email_update_email.html",  # 需要渲染的html模板
+            {
+                "active_code": code  # 参数
+            }
+        )
+        msg = EmailMessage(email_title, email_body, EMAIL_FROM, [email])
+        msg.content_subtype = "html"
+        send_status = msg.send()

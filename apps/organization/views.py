@@ -87,6 +87,8 @@ class OrgHomeView(View):
         current_page = "home"
         # 1、根据ID获取机构信息
         course_org = CourseOrg.objects.get(id=org_id)
+        course_org.click_nums +=1
+        course_org.save()
         # 通过获取的机构信息，直接获取它的所有课程
         all_courses = course_org.course_set.all()[:4]
         all_teachers = course_org.teacher_set.all()[:3]
@@ -267,22 +269,29 @@ class TeacherListView(View):
 class TeacherDetailView(View):
     def get(self,request, teacher_id):
         #获取teacher对象
-        teacher = Teacher.objects.get(id=teacher_id)
+        teacher = Teacher.objects.get(id=int(teacher_id))
+        teacher.click_nums += 1
+        teacher.save()
         #获取教师的全部课程
         all_course = teacher.course_set.all()
 
+        # 排行榜讲师
+        rank_teacher = Teacher.objects.all().order_by("-fav_nums")[:5]
+
         #收藏的问题
         has_fav_teacher = False
-        if UserFavorite.objects.filter(user=request.user, fav_type=3, fav_id=teacher.id):
-            has_fav_teacher = True
-
         has_fav_org = False
-        if UserFavorite.objects.filter(user=request.user, fav_type=2, fav_id=teacher.org.id):
-            has_fav_org = True
+        if request.user.is_authenticated:
+            if UserFavorite.objects.filter(user=request.user, fav_type=3, fav_id=int(teacher.id)):
+                has_fav_teacher = True
+
+            if UserFavorite.objects.filter(user=request.user, fav_type=2, fav_id=int(teacher.org.id)):
+                has_fav_org = True
 
         return render(request, 'teacher-detail.html', {
             'teacher': teacher,
             'all_course': all_course,
+            "rank_teacher": rank_teacher,
             'has_fav_teacher': has_fav_teacher,
             'has_fav_org': has_fav_org,
         })

@@ -15,18 +15,17 @@ Including another URLconf
 """
 
 from django.urls import path, include, re_path
-from django.views.generic import TemplateView
 from django.views.static import serve
-
 import xadmin
-from organization.views import OrgView
-from settings import MEDIA_ROOT
-from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, PswResetView, ModifyPwdView
+from settings import MEDIA_ROOT, STATIC_ROOT
+from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, PswResetView, ModifyPwdView, LogoutView, \
+    IndexView
 
 urlpatterns = [
     path('xadmin/', xadmin.site.urls),
-    path('', TemplateView.as_view(template_name='index.html'), name='index'),
+    path('', IndexView.as_view(), name='index'),
     path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name="logout"),
     path('register/', RegisterView.as_view(), name='register'),
     # 验证码url
     path('captcha/', include('captcha.urls')),
@@ -38,4 +37,9 @@ urlpatterns = [
     # 课程机构app的url配置，讲师的也在里面
     path('org/', include('organization.urls', namespace='org')),
     path('course/', include('courses.urls', namespace='course')),
+    path('user/', include('users.urls', namespace='user')),
+    # 配置静态文件上传的访问处理url
+    re_path('static/(?P<path>.*)', serve, {"document_root": STATIC_ROOT}),
+    # 配置文件上传的访问处理url
+    re_path('media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
 ]

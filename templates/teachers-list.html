@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block titile %}
-    授课教师 | mtianyan慕课小站
+    授课教师 | Istudynet小站
 {% endblock %}
 
 {% load staticfiles %}
@@ -43,7 +43,7 @@
                                 </a>
                                 <div class="btn">
                                     <div class="fr btn2 bdsharebuttonbox " data-tag="share_{{ teacher.id }}"
-                                         data="{'text':'授课教师-{{ teacher.name }}-mtianyan慕课小站'}"
+                                         data="{'text':'授课教师-{{ teacher.name }}-Istudynet小站'}"
                                     >
 
 
@@ -138,8 +138,8 @@
                     {
                         "tag": "share_{{ teacher.id }}",
                         "bdSize": 16,
-                        "bdText": "授课教师-{{ teacher.name }}-mtianyan慕课小站",
-                        "bdDesc": "我在#mtianyan慕课小站#发现了老师“{{ teacher.name }}”，对我们学习很有帮助，一起来看看吧",
+                        "bdText": "授课教师-{{ teacher.name }}-Istudynet小站",
+                        "bdDesc": "我在#Istudynet小站#发现了老师“{{ teacher.name }}”，对我们学习很有帮助，一起来看看吧",
                         "bdUrl": 'http://mxonline.mtianyan.cn{% url 'org:teacher_detail' teacher.id %}',
 
 

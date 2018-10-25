@@ -5,6 +5,8 @@
 from captcha.fields import CaptchaField
 from django import forms
 
+from users.models import UserProfile
+
 
 class LoginForm(forms.Form):
     # 用户名不能为空
@@ -32,3 +34,18 @@ class ForgetForm(forms.Form):
 class ModifyPwdForm(forms.Form):
     new_psw = forms.CharField(required=True, min_length=5, error_messages={'required': u'新密码不能为空'})
     new_psw_confirm = forms.CharField(required=True, min_length=5, error_messages={'required': u'新密码确认不能为空'})
+
+# 用于文件上传，修改头像
+class UploadImageForm(forms.ModelForm):
+
+    class Meta:
+        model = UserProfile
+        fields = ['image']
+
+
+# 用于个人中心修改个人信息
+class UserInfoForm(forms.ModelForm):
+
+    class Meta:
+        model = UserProfile
+        fields = ['nick_name','gender','birthday','address','mobile']

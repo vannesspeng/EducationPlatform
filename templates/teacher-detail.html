@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block titile %}
-讲师详情 | mtianyan慕课小站
+讲师详情 | Istudynet小站
 {% endblock %}
 
 {% load staticfiles %}
@@ -194,8 +194,8 @@ $('#jsRightBtn').on('click', function(){
                    {
 			"tag" : "share_{{ teacher.id }}",
 			"bdSize" : 16,
-                       "bdText":"授课教师-{{ teacher.name }}-mtianyan慕课小站",
-                       "bdDesc": "我在#mtianyan慕课小站#发现了老师“{{ teacher.name }}”，对我们学习很有帮助，一起来看看吧",
+                       "bdText":"授课教师-{{ teacher.name }}-Istudynet小站",
+                       "bdDesc": "我在#Istudynet小站#发现了老师“{{ teacher.name }}”，对我们学习很有帮助，一起来看看吧",
                         "bdUrl": 'http://mxonline.mtianyan.cn{% url 'org:teacher_detail' teacher.id %}',
 
 

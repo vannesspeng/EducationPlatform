@@ -78,13 +78,29 @@ class CourseDetailView(View):
 
 class CourseInfoView(View):
     def get(self, request, course_id):
-        course = Course.objects.get(id=course_id)
+        # 此处的id为表默认为我们添加的值。
+        course = Course.objects.get(id=int(course_id))
+        # 查询用户是否开始学习了该课，如果还未学习则，加入用户课程表
+        user_courses = UserCourse.objects.filter(user=request.user, course=course)
+        if not user_courses:
+            user_course = UserCourse(user=request.user, course=course)
+            course.students += 1
+            course.save()
+            user_course.save()
+        # 查询课程资源
+        all_resources = CourseResource.objects.filter(course=course)
+        # 选出学了这门课的学生关系
         user_courses = UserCourse.objects.filter(course=course)
+
         user_ids = [user_course.user_id for user_course in user_courses]
         all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
-        course_ids = [all_user_course.course_id for all_user_course in all_user_courses]
-        relate_courses = Course.objects.filter(id__in=course_ids).exclude(id=course_id)
-        return render(request, 'course-video.html', {'course': course, 'relate_courses': relate_courses})
+        course_ids = [user_course.course_id for user_course in all_user_courses]
+        relate_courses = Course.objects.filter(id__in=course_ids).order_by("-click_nums").exclude(id=course_id)
+        return render(request, 'course-video.html', {
+            'course': course,
+            "all_resources": all_resources,
+            'relate_courses': relate_courses,
+        })
 
 class CommentsView(View):
     def get(self, request, course_id):
