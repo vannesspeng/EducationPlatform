@@ -17,28 +17,28 @@ class UserAskAdmin(object):
 # 用户课程学习后台管理器
 class UserCourseAdmin(object):
     list_display = ['user', 'course', 'add_time']
-    search_fields = ['user', 'course']
+    search_fields = ['user__username', 'course__name']
     list_filter = ['user', 'course', 'add_time']
 
 
 # 用户消息后台管理器
 class UserMessageAdmin(object):
     list_display = ['user', 'message', 'has_read', 'add_time']
-    search_fields = ['user', 'message', 'has_read']
+    search_fields = ['user__username', 'message', 'has_read']
     list_filter = ['user', 'message', 'has_read', 'add_time']
 
 
 # 用户评论后台管理器
 class CourseCommentsAdmin(object):
     list_display = ['user', 'course', 'comments', 'add_time']
-    search_fields = ['user', 'course', 'comments']
+    search_fields = ['user__username', 'course__name', 'comments']
     list_filter = ['user', 'course', 'comments', 'add_time']
 
 
 # 用户收藏后台管理器
 class UserFavoriteAdmin(object):
     list_display = ['user', 'fav_id', 'fav_type', 'add_time']
-    search_fields = ['user', 'fav_id', 'fav_type']
+    search_fields = ['user__username', 'fav_id', 'fav_type']
     list_filter = ['user', 'fav_id', 'fav_type', 'add_time']
 
 

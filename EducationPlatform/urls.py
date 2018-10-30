@@ -17,7 +17,7 @@ Including another URLconf
 from django.urls import path, include, re_path
 from django.views.static import serve
 import xadmin
-from settings import MEDIA_ROOT, STATIC_ROOT
+from EducationPlatform.settings import MEDIA_ROOT
 from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, PswResetView, ModifyPwdView, LogoutView, \
     IndexView
 
@@ -39,7 +39,9 @@ urlpatterns = [
     path('course/', include('courses.urls', namespace='course')),
     path('user/', include('users.urls', namespace='user')),
     # 配置静态文件上传的访问处理url
-    re_path('static/(?P<path>.*)', serve, {"document_root": STATIC_ROOT}),
+    re_path('static/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
     # 配置文件上传的访问处理url
-    re_path('media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
+    # re_path('media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
+    # 富文本相关path配置
+    path("ueditor/", include('DjangoUeditor.urls')),
 ]

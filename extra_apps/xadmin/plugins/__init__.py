@@ -29,6 +29,7 @@ PLUGINS = (
     'quickfilter',
     'sortablelist',
     'importexport',
+    # 新增ueditor插件
     'ueditor',
 )
 

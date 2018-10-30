@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db import models
 
+from DjangoUeditor.models import UEditorField
 from organization.models import CourseOrg, Teacher
 
 
@@ -16,7 +17,9 @@ class Course(models.Model):
     name = models.CharField(max_length=50, verbose_name=u"课程名")
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
     # TextField允许我们不输入长度。可以输入到无限大。暂时定义为TextFiled，之后更新为富文本
-    detail = models.TextField(verbose_name=u"课程详情")
+    #detail = models.TextField(verbose_name=u"课程详情")
+    detail = UEditorField(verbose_name='课程详情', width=600, height=300, imagePath="courses/ueditor/",
+                          filePath="courses/ueditor/", default='')
     is_banner = models.BooleanField(default=False, verbose_name=u"是否轮播")
     degree = models.CharField(choices=DEGREE_CHOICES, max_length=2)
     # 使用分钟做后台记录(存储最小单位)前台转换
@@ -44,9 +47,17 @@ class Course(models.Model):
         return self.name
 
     # 替代标签:course.lesson_set.count
-    # def get_zj_nums(self):
-    #     # 获取课程章节数的方法
-    #     return self.lesson_set.all().count()
+    def get_zj_nums(self):
+        # 获取课程章节数的方法
+        return self.lesson_set.all().count()
+
+    def go_to(self):
+        from django.utils.safestring import mark_safe
+        # 如果不使用mark_safe，系统则会对其进行转义
+        return mark_safe("<a href='http://blog.licheetools.top'>跳转</>")
+
+    go_to.short_description = "跳转"
+
 
     # 获取学习这门课程的用户
     # 替代标签:course.usercourse_set.get_queryset|slice:":1"
@@ -55,12 +66,20 @@ class Course(models.Model):
     #     return self.usercourse_set.all()[:5]
 
 
+class BannerCourse(Course):  # 注意是继承Course而不是object这个最高类
+    class Meta:
+        verbose_name = "轮播课程"
+        verbose_name_plural = verbose_name
+        proxy = True  # 很重要，否则会生成另外一张表，这样设置具有model的功能，但不会生成表
+
+
 # 章节
 class Lesson(models.Model):
     # 因为一个课程对应很多章节。所以在章节表中将课程设置为外键。
     # 作为一个字段来让我们可以知道这个章节对应那个课程
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name=u"课程")
     name = models.CharField(max_length=100, verbose_name=u"章节名")
+    learn_times = models.IntegerField(default=0, verbose_name=u"学习时长(分钟数)")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")
 
     class Meta:

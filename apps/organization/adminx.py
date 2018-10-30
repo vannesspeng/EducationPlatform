@@ -20,10 +20,13 @@ class CourseOrgAdmin(object):
     search_fields = ['name', 'desc', 'click_nums', 'fav_nums']
     list_filter = ['name', 'desc', 'click_nums', 'fav_nums','city__name','address','add_time']
 
+    # 搜索框，当课程数据量过大时，有课程指向它，会以ajax方式加载
+    relfield_style = 'fk-ajax'
+
 
 class TeacherAdmin(object):
     list_display = [ 'name','org', 'work_years', 'work_company','add_time']
-    search_fields = ['org', 'name', 'work_years', 'work_company']
+    search_fields = ['org__name', 'name', 'work_years', 'work_company']
     list_filter = ['org__name', 'name', 'work_years', 'work_company','click_nums', 'fav_nums', 'add_time']
 
 

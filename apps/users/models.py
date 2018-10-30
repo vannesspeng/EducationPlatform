@@ -68,7 +68,7 @@ class EmailVerifyRecord(models.Model):
 class Banner(models.Model):
     title = models.CharField(max_length=100, verbose_name=u"标题")
     image = models.ImageField(
-        upload_to="banner/%Y/%m",
+        upload_to= "banner/%Y/%m",
         verbose_name=u"轮播图",
         max_length=100)
     url = models.URLField(max_length=200, verbose_name=u"访问地址")

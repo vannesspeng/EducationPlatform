@@ -5,7 +5,7 @@
 from django.contrib.auth.models import Group, Permission
 
 import xadmin
-from courses.models import Course, Lesson, Video, CourseResource
+from courses.models import Course, Lesson, Video, CourseResource, BannerCourse
 from operation.models import CourseComments, UserCourse, UserFavorite, UserMessage, UserAsk
 from organization.models import CityDict, Teacher, CourseOrg
 from xadmin import views
@@ -21,6 +21,7 @@ class EmailVerifyRecordAdmin(object):
     search_fields = ['code', 'email', 'send_type']
     # 配置筛选字段
     list_filter = ['code', 'email', 'send_type', 'send_time']
+    model_icon = 'fa fa-envelope'
 
 
 class BannerAdmin(object):
@@ -44,36 +45,53 @@ class GlobalSettings(object):
 
     def get_site_menu(self):
         return (
-            {'title': '课程管理', 'menus': (
-                {'title': '课程信息', 'url': self.get_model_url(Course, 'changelist')},
-                {'title': '章节信息', 'url': self.get_model_url(Lesson, 'changelist')},
-                {'title': '视频信息', 'url': self.get_model_url(Video, 'changelist')},
-                {'title': '课程资源', 'url': self.get_model_url(CourseResource, 'changelist')},
-                {'title': '课程评论', 'url': self.get_model_url(CourseComments, 'changelist')},
-                )
+            {
+                'title': '课程管理',
+                'icon': 'fa fa-book',
+                'menus': (
+                    {'title': '普通课程', 'icon': 'fa fa-info', 'url': self.get_model_url(Course, 'changelist')},
+                    {'title': '轮播课程', 'icon': 'fa fa-info', 'url': self.get_model_url(BannerCourse, 'changelist')},
+                    {'title': '章节信息', 'icon': 'fa fa-puzzle-piece', 'url': self.get_model_url(Lesson, 'changelist')},
+                    {'title': '视频信息', 'icon': 'fa fa-play-circle', 'url': self.get_model_url(Video, 'changelist')},
+                    {'title': '课程资源', 'icon': 'fa fa-files-o', 'url': self.get_model_url(CourseResource, 'changelist')},
+                    {'title': '课程评论', 'icon': 'fa fa-comment', 'url': self.get_model_url(CourseComments, 'changelist')},
+                ),
             },
-            {'title': '机构管理', 'menus': (
-                {'title': '所在城市', 'url': self.get_model_url(CityDict, 'changelist')},
-                {'title': '机构讲师', 'url': self.get_model_url(Teacher, 'changelist')},
-                {'title': '机构信息', 'url': self.get_model_url(CourseOrg, 'changelist')},
-            )},
-            {'title': '用户管理', 'menus': (
-                {'title': '用户信息', 'url': self.get_model_url(UserProfile, 'changelist')},
-                {'title': '用户验证', 'url': self.get_model_url(EmailVerifyRecord, 'changelist')},
-                {'title': '用户课程', 'url': self.get_model_url(UserCourse, 'changelist')},
-                {'title': '用户收藏', 'url': self.get_model_url(UserFavorite, 'changelist')},
-                {'title': '用户消息', 'url': self.get_model_url(UserMessage, 'changelist')},
-            )},
-            {'title': '系统管理', 'menus': (
-                {'title': '用户咨询', 'url': self.get_model_url(UserAsk, 'changelist')},
-                {'title': '首页轮播', 'url': self.get_model_url(Banner, 'changelist')},
-                {'title': '用户分组', 'url': self.get_model_url(Group, 'changelist')},
-                {'title': '用户权限', 'url': self.get_model_url(Permission, 'changelist')},
-                {'title': '日志记录', 'url': self.get_model_url(Log, 'changelist')},
-            )},
+            {
+                'title': '机构管理',
+                'icon': 'fa fa-sitemap',
+                'menus': (
+                    {'title': '所在城市', 'icon': 'fa fa-map-marker', 'url': self.get_model_url(CityDict, 'changelist')},
+                    {'title': '机构讲师', 'icon': 'fa fa-user', 'url': self.get_model_url(Teacher, 'changelist')},
+                    {'title': '机构信息', 'icon': 'fa fa-info', 'url': self.get_model_url(CourseOrg, 'changelist')},
+                )},
+            {
+                'title': '用户管理',
+                'icon': 'fa fa-user',
+                'menus': (
+                    {'title': '用户信息', 'icon': 'fa fa-info', 'url': self.get_model_url(UserProfile, 'changelist')},
+                    {'title': '邮箱验证', 'icon': 'fa fa-envelope', 'url': self.get_model_url(EmailVerifyRecord, 'changelist')},
+                    {'title': '用户课程', 'icon': 'fa fa-book', 'url': self.get_model_url(UserCourse, 'changelist')},
+                    {'title': '用户收藏', 'icon': 'fa fa-star', 'url': self.get_model_url(UserFavorite, 'changelist')},
+                    {'title': '用户消息', 'icon': 'fa fa-comment', 'url': self.get_model_url(UserMessage, 'changelist')},
+                )},
+            {
+                'title': '系统管理',
+                'icon': 'fa fa-cogs',
+                'menus': (
+                    {'title': '用户咨询', 'icon': 'fa fa-question-circle', 'url': self.get_model_url(UserAsk, 'changelist')},
+                    {'title': '首页轮播', 'icon': 'fa fa-play', 'url': self.get_model_url(Banner, 'changelist')},
+                    {'title': '用户分组', 'icon': 'fa fa-users', 'url': self.get_model_url(Group, 'changelist')},
+                    {'title': '用户权限', 'icon': 'fa fa-id-card-o', 'url': self.get_model_url(Permission, 'changelist')},
+                    {'title': '日志记录', 'icon': 'fa fa-address-card', 'url': self.get_model_url(Log, 'changelist')},
+                )},
         )
 
+
+# 将model与admin管理器进行关联注册
 xadmin.site.register(EmailVerifyRecord, EmailVerifyRecordAdmin)
 xadmin.site.register(Banner, BannerAdmin)
+# 将Xadmin全局管理器与我们的view绑定注册
 xadmin.site.register(views.BaseAdminView, BaseSetting)
+# 将头部与脚部信息进行注册:
 xadmin.site.register(views.CommAdminView, GlobalSettings)

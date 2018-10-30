@@ -6,7 +6,7 @@ from random import Random
 
 from django.template import loader
 
-from settings import EMAIL_FROM
+from EducationPlatform.settings import EMAIL_FROM
 from  users.models import EmailVerifyRecord
 # 导入Django自带的邮件模块
 from django.core.mail import EmailMessage
