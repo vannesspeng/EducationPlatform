@@ -39,7 +39,7 @@
                                 </dl>
                                 <div class="btn">
                                     <a class="personcenter fl" href="{% url 'user:user_info' %}">进入个人中心</a>
-                                    <a class="fr" href="">退出</a>
+                                    <a class="fr" href="{% url 'logout' %}">退出</a>
                                 </div>
                             </div>
                         </div>
@@ -129,17 +129,6 @@
 
 <footer>
     <div class="footer">
-        <div class="wp">
-            <ul class="cont">
-                <li class="logo"><a href="{% url 'index' %}"><img src="{% static 'images/footlogo.png' %}"/></a></li>
-                <li class="code"><img src="{% static 'images/code.jpg' %}"/>
-                    <p class="center">扫描关注微信</p></li>
-                <li class="third"><img class="fl" src="{% static 'images/tell.png' %}"/>
-                    <p class="tell">23333333</p>
-                    <p class="time">周一至周日 9:00-18:00</p></li>
-            </ul>
-
-        </div>
         <p class="line"></p>
         <div class="wp clear">
             <span class="fl">©2018 istudynet-在线学习交流平台 保留所有权利</span>

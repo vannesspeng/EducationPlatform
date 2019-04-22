@@ -42,7 +42,7 @@
             <ul class="fr hd-bar">
                 <li>服务电话：<span>23333333</span></li>
                 <li class="active"><a href="{% url 'login' %}">[登录]</a></li>
-                <li><a href="">[注册]</a></li>
+                <li><a href="{% url 'register' %}">[注册]</a></li>
             </ul>
         </div>
     </div>
@@ -94,7 +94,7 @@
                     <input type="hidden" name="next" value="{{ redirect_url }}"/>
                     {% csrf_token %}
                 </form>
-                <p class="form-p">没有Istudynet小站帐号？<a href="">[立即注册]</a></p>
+                <p class="form-p">没有Istudynet小站帐号？<a href="{% url 'register' %}">[立即注册]</a></p>
             </div>
         </div>
     </div>

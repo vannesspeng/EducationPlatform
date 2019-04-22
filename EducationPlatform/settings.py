@@ -157,3 +157,4 @@ EMAIL_FROM = '2810706745@qq.com'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+LOGIN_URL = '/login/'
