@@ -48,7 +48,7 @@
                 <video id="example_video_1" class="video-js vjs-default-skin" controls preload="none" width="1200"
                        poster="http://video-js.zencoder.com/oceans-clip.png"
                        data-setup="{}">
-                    <source src="test.mp4" type='video/mp4'>
+                    <source src="{{ MEDIA_URL }}{{ video.url }}" type='video/mp4'>
                 </video>
             </div>
             <div class="info-bar clearfix">

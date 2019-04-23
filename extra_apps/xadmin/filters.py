@@ -11,7 +11,6 @@ from django.utils.safestring import mark_safe
 from django.utils.html import escape, format_html
 from django.utils.text import Truncator
 from django.core.cache import cache, caches
-
 from xadmin.views.list import EMPTY_CHANGELIST_VALUE
 from xadmin.util import is_related_field, is_related_field2
 import datetime
@@ -338,7 +337,6 @@ class RelatedFieldSearchFilter(FieldFilter):
         return related_modeladmin and getattr(related_modeladmin, 'relfield_style', None) in ('fk-ajax', 'fk-select')
 
     def __init__(self, field, request, params, model, model_admin, field_path):
-        print('-------------------------')
         other_model = get_model_from_relation(field)
         if hasattr(field, 'remote_field'):
             rel_name = field.remote_field.get_related_field().name
